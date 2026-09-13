@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: blog :: 2026</title>
+  <style>
+    {{ css | safe }}
+  </style>
+</head>
+<body>
+  <main class="archive-container">
+    <header class="archive-header">
+      <h1 class="archive-title">:: blog :: 2026</h1>
+      <p class="archive-subtitle">long-form posts, dated.</p>
+
+      <nav class="year-nav">
+        <span class="year-pagination">&lt; 2025 · 2026 &gt;</span>
+        <div class="year-tabs">
+          <span class="year-tab active">2026</span>
+          <span class="year-tab">2025</span>
+          <span class="year-tab">2024</span>
+          <span class="tags-link">· tags</span>
+        </div>
+      </nav>
+    </header>
+
+    <section class="post-list">
+      {% for blog in blogs %}
+        <article class="post-row">
+          <div class="post-meta-prefix">
+            <span class="symbol">»</span>
+            <time datetime="{{ blog.meta.date }}">{{ blog.meta.date }}</time>
+          </div>
+          
+          <div class="post-title-group">
+            {% set filename = blog.path | split("/") | last | split(".") | first %}
+            <a href="{{ filename }}.html" class="post-link">{{ blog.meta.title }}</a>
+
+            {% if blog.meta.tags %}
+              <span class="tag-list">
+                {% for tag in blog.meta.tags %}
+                  <span class="tag-pill">{{ tag }}</span>
+                {% endfor %}
+              </span>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+
+    <footer class="archive-footer">
+      <span class="prev-year-link">&lt; 2025</span>
+    </footer>
+  </main>
+</body>
+</html>

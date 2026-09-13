@@ -1,38 +1,11 @@
-use crate::metadata;
 use katex::Opts;
-use minijinja::{Environment, context};
 use pulldown_cmark::{Event, Options, Parser, html};
 use std::error::Error;
 use std::fs;
 
-const POST_TEMPLATE: &str = include_str!("../res/templates/post.html");
-const STYLE_CSS: &str = include_str!("../res/templates/style.css");
-
-pub fn mdFileToHtml(file: &str) -> Result<String, Box<dyn Error>> {
-    let content: String = fs::read_to_string(file)?;
-    let (mut meta, body): (metadata::Metadata, &str) = metadata::parse_metadata(&content)?;
-    meta.wordNum = body.split_whitespace().count() as u32;
-    meta.readTime = (meta.wordNum / 200) as u16;
-
-    let body_html = mdToHtml(body)?;
-    let mut env = Environment::new();
-    let template_source = POST_TEMPLATE;
-    env.add_template("post", &template_source)?;
-
-    // 3. Render into the template
-    let tmpl = env.get_template("post")?;
-    let rendered_html = tmpl.render(context! {
-        meta => meta,
-        body => body_html,
-        css => STYLE_CSS,
-    })?;
-    save_html(&rendered_html)?;
-    Ok(rendered_html)
-}
-
-fn save_html(str: &str) -> std::io::Result<()> {
-    let file_name = "main.html";
-    fs::write(file_name, str)?;
+pub fn save_html(output_file: &str, content: &str) -> std::io::Result<()> {
+    let root_dir = "website/";
+    fs::write(format!("{root_dir}{output_file}.html"), content)?;
     Ok(())
 }
 

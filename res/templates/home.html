@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skyfrei</title>
+  <style>
+    {{ css | safe }}
+  </style>
+</head>
+<body>
+  <div class="desktop-screen">
+    <!-- Main Outer Window Frame -->
+    <div class="hud-window">
+      
+      <!-- Top Title Bar -->
+      <header class="hud-titlebar">
+        <div class="title-badge">skyfrei</div>
+        <div class="title-pipes">
+          <div class="pipe"></div>
+          <div class="pipe"></div>
+        </div>
+        <div class="hud-clock" id="clock">Sun13Sep2026, 21:13 GMT</div>
+      </header>
+
+      <!-- Main Central HUD Workspace -->
+      <main class="hud-workspace">
+        
+        <!-- Left Side: Nav Menu Buttons -->
+        <nav class="hud-nav-column">
+          <a href="#" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>
+        </nav>
+
+        <!-- Center: Abstract Sci-Fi Art Piece -->
+        <div class="hud-centerpiece">
+          <div class="center-art"></div>
+        </div>
+
+        <!-- Right Side: Floating Widget Boxes -->
+        <aside class="hud-widgets-column">
+          <!-- Widget: Updates -->
+          <div class="hud-panel-box">
+            <div class="panel-header">:: updates ::</div>
+            <div class="panel-body">
+              <p class="update-headline"><span class="sym">»</span> 10.01.2026</p>
+              <p class="update-text">I maintain GNU automake/autoconf now!</p>
+              <a href="#" class="panel-link">&gt; view all updates</a>
+            </div>
+          </div>
+
+          <!-- Widget: Recent Activity -->
+          <div class="hud-panel-box">
+            <div class="panel-header">:: recent activity ::</div>
+            <div class="panel-body">
+              <div class="activity-row">
+                <span>github last activity</span>
+                <span class="time-dim">3d ago</span>
+              </div>
+              <div class="activity-row">
+                <span>mastodon last post</span>
+                <span class="time-dim">10d ago</span>
+              </div>
+              <div class="activity-row">
+                <span>bluesky last post</span>
+                <span class="time-dim">1d ago</span>
+              </div>
+              <div class="status-subblock">
+                <span class="label-dim">currently</span>
+                <p class="status-msg">back to work...</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </main>
+
+      <!-- Lower Inset: Latest from the blog -->
+      <section class="hud-latest-blog">
+        <div class="panel-header">:: latest from the blog ::</div>
+        <div class="latest-blog-inner">
+          <div class="blog-text-col">
+            <p class="blog-line">
+              <span class="sym">»</span> 07.13.2026 
+              <a href="blog.html" class="blog-title-link">Settling a 2006 conjecture on Huffman codes.</a>
+            </p>
+            <a href="blog.html" class="panel-link">&gt; read more</a>
+          </div>
+          <div class="blog-thumbnail-box"></div>
+        </div>
+      </section>
+
+      <!-- Bottom Chassis Status Bar -->
+      <footer class="hud-footer">
+        <div class="footer-dots">+++ //////</div>
+        <div class="footer-info">
+          https://skyfrei.dev // (c) 2026 skyfrei (Klavio Tarka) // email: k@skyfrei.dev
+        </div>
+        <div class="footer-grip"></div>
+      </footer>
+
+    </div>
+  </div>
+<script>
+    function updateClock() {
+      const el = document.getElementById("clock");
+      if (!el) return;
+
+      const d = new Date();
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      const dayName = days[d.getUTCDay()];
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      const month = months[d.getUTCMonth()];
+      const year = d.getUTCFullYear();
+
+      const hours = String(d.getUTCHours()).padStart(2, "0");
+      const mins = String(d.getUTCMinutes()).padStart(2, "0");
+      const secs = String(d.getUTCSeconds()).padStart(2, "0");
+
+      el.textContent = `${dayName}${day}${month}${year}, ${hours}:${mins}:${secs} GMT`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
