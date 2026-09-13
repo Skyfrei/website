@@ -2,6 +2,8 @@ use crate::blog_struct;
 use crate::converter;
 use crate::metadata;
 use minijinja::{Environment, context};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
@@ -50,9 +52,15 @@ fn mdDirToBlogs() -> Result<Vec<blog_struct::Blog>, Box<dyn Error>> {
                 .map_err(|e| format!("Error parsing metadata in '{}': {e}", path.display()))?;
 
             blogFileToHtml(&path)?;
+            let stem = path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .unwrap_or("post")
+                .to_string();
 
             posts.push(blog_struct::Blog {
                 path,
+                slug: stem,
                 meta,
                 body: body.to_string(),
             });
@@ -67,9 +75,29 @@ pub fn generate_blog_index() -> Result<String, Box<dyn Error>> {
     let blog_files: Vec<blog_struct::Blog> = mdDirToBlogs()?;
 
     let mut env = Environment::new();
-    env.add_template("blog_index", BLOG_INDEX_TEMPLATE)?;
 
+    env.add_template("blog_index", BLOG_INDEX_TEMPLATE)?;
     let tmpl = env.get_template("blog_index")?;
+
+    let mut tag_map: BTreeMap<String, Vec<&blog_struct::Blog>> = BTreeMap::new();
+    let mut all_tags: BTreeSet<String> = BTreeSet::new();
+
+    for blog in &blog_files {
+        for tag in &blog.meta.tags {
+            all_tags.insert(tag.clone());
+            tag_map.entry(tag.clone()).or_default().push(blog);
+        }
+    }
+    for (tag, tagged_blogs) in &tag_map {
+        let rendered_tag = tmpl.render(context! {
+            blogs => tagged_blogs,
+            css => STYLE_BLOG_INDEX_CSS,
+            active_tag => Some(tag),
+            all_tags => &all_tags,
+        })?;
+        converter::save_html(&format!("tag-{tag}"), &rendered_tag)?;
+    }
+
     let rendered = tmpl.render(context! {
         blogs => blog_files,
         css => STYLE_BLOG_INDEX_CSS,
