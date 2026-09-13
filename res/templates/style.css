@@ -1,0 +1,250 @@
+/* ==========================================================================
+   Base & Modern Academic Reset
+   ========================================================================== */
+:root {
+  --bg: #fafafa;
+  --fg: #1e1e1e;
+  --fg-muted: #666666;
+  --border: #e4e4e7;
+  --accent: #2563eb;
+  --code-bg: #f4f4f5;
+  --callout-bg: #f8fafc;
+  --max-width: 760px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141416;
+    --fg: #e2e2e8;
+    --fg-muted: #9999a1;
+    --border: #27272a;
+    --accent: #60a5fa;
+    --code-bg: #1e1e24;
+    --callout-bg: #18181b;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 17px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 2.5rem 1.25rem 5rem;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  line-height: 1.72;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Container & Layout
+   ========================================================================== */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+article {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Header & Metadata
+   ========================================================================== */
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-header h1 {
+  font-size: 2.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.75rem 0;
+}
+
+.post-meta {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.25rem 0;
+}
+
+/* ==========================================================================
+   Prose & Headings
+   ========================================================================== */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+  color: var(--fg);
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 2.5rem 0 1rem;
+}
+
+.post-content h1 { font-size: 1.55rem; letter-spacing: -0.015em; }
+.post-content h2 { font-size: 1.32rem; }
+.post-content h3 { font-size: 1.15rem; }
+
+.post-content p {
+  margin: 1.25rem 0;
+}
+
+.post-content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.post-content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.post-content ul,
+.post-content ol {
+  padding-left: 1.6rem;
+  margin: 1.25rem 0;
+}
+
+.post-content li {
+  margin: 0.35rem 0;
+}
+
+/* ==========================================================================
+   Theorems & Blockquotes (Iczelia-style callouts)
+   ========================================================================== */
+blockquote {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--callout-bg);
+  border-left: 3px solid var(--fg-muted);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.96rem;
+  color: var(--fg);
+}
+
+blockquote p {
+  margin: 0.5rem 0;
+}
+
+blockquote p:first-child {
+  margin-top: 0;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Code Blocks & Inline Code
+   ========================================================================== */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-bg);
+  padding: 0.2em 0.38em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 1.6rem 0;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+th, td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--fg-muted);
+  border-bottom: 2px solid var(--border);
+}
+
+tr:hover {
+  background-color: var(--callout-bg);
+}
+
+/* ==========================================================================
+   KaTeX Math Fixes & Responsiveness
+   ========================================================================== */
+/* Display math container: allow horizontal scroll on narrow screens */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.75rem 0;
+  margin: 1.5rem 0;
+  scrollbar-width: thin;
+}
+
+.math-err {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 0.5rem;
+  border-radius: 4px;
+}

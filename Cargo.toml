@@ -1,0 +1,11 @@
+[package]
+name = "cloudflare-website"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+katex = "0.4.6"
+minijinja = "2.24.0"
+pulldown-cmark = "0.13.4"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_yaml = "0.9.34"

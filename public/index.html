@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBERCORE // NODE 0x01</title>
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel-bg: #0b0f14;
+      --bezel-outer: #333a42;
+      --bezel-inner: #11151a;
+      --chrome-light: #8b9bb4;
+      --chrome-dark: #1e242c;
+      --accent: #00e5ff;
+      --accent-dim: rgba(0, 229, 255, 0.15);
+      --text: #c0cad6;
+      --text-muted: #5e6c7c;
+      --font-mono: 'Courier New', Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse at 50% 20%, rgba(0, 229, 255, 0.05) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 2px);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    /* Main Chassis */
+    .chassis {
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(145deg, #242930, #0c0f13);
+      border: 1px solid #4a5462;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 
+        0 0 0 2px #080a0d,
+        0 15px 40px rgba(0,0,0,0.9),
+        inset 0 1px 1px rgba(255,255,255,0.3);
+    }
+
+    /* Top Titlebar */
+    .titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(180deg, #2a333f 0%, #151a21 50%, #0d1015 100%);
+      border: 1px solid #3d4653;
+      border-radius: 4px;
+      padding: 6px 14px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #e2e8f0;
+      text-shadow: 0 0 4px var(--accent);
+    }
+
+    .titlebar-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #3a4553;
+      border: 1px solid #1a2027;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* Content Layout */
+    .interface {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .interface {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Skeuomorphic Frame */
+    .frame {
+      background: var(--panel-bg);
+      border: 1px solid #232a34;
+      border-radius: 5px;
+      padding: 12px;
+      box-shadow: 
+        inset 0 0 8px rgba(0, 0, 0, 0.9),
+        0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+    }
+
+    .frame-header {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px dashed #202b36;
+      padding-bottom: 5px;
+    }
+
+    /* Sidebar Navigation Buttons */
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      color: #9ab;
+      padding: 7px 10px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #1b2129 0%, #0e1217 100%);
+      border: 1px solid #28323f;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: all 0.15s ease;
+    }
+
+    .nav-item a:hover {
+      color: #fff;
+      background: linear-gradient(180deg, #242c36 0%, #151a20 100%);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent-dim), inset 0 1px 0 rgba(255,255,255,0.15);
+      transform: translateX(2px);
+    }
+
+    .nav-item a span.arrow {
+      color: var(--accent);
+      font-size: 10px;
+    }
+
+    /* Recessed Terminal Screen */
+    .screen {
+      background: #05070a;
+      border: 1px solid #141b22;
+      border-radius: 3px;
+      padding: 12px;
+      box-shadow: inset 0 2px 10px #000;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .screen-lead {
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 5px;
+      border: 1px solid #233748;
+      background: #09131c;
+      color: var(--accent);
+      font-size: 10px;
+      margin-right: 4px;
+    }
+
+    /* Updates Grid */
+    .log-entry {
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dotted #182029;
+    }
+
+    .log-date {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* Chassis Footer */
+    .footer-bar {
+      margin-top: 10px;
+      background: #0b0e12;
+      border: 1px solid #1a2027;
+      border-radius: 4px;
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chassis">
+    <!-- Header -->
+    <div class="titlebar">
+      <span>// KERNEL::DAEMON_V2.06</span>
+      <div class="titlebar-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="interface">
+      <!-- Left Column: Navigation & Status -->
+      <aside style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="frame">
+          <div class="frame-header">:: NAVIGATION ::</div>
+          <ul class="nav-list">
+            <li class="nav-item"><a href="#about"><span>// ABOUT</span><span class="arrow">&gt;</span></a></li>
+            <li class="nav-item"><a href="#projects"><span>// ARCHIVES</span><span class="arrow">&gt;</span></a></li>
+            <li class="nav-item"><a href="#journal"><span>// LOGS</span><span class="arrow">&gt;</span></a></li>
+            <li class="nav-item"><a href="#contact"><span>// COMMS</span><span class="arrow">&gt;</span></a></li>
+          </ul>
+        </div>
+
+        <div class="frame">
+          <div class="frame-header">:: TELEMETRY ::</div>
+          <div style="font-size: 11px; line-height: 1.6; color: var(--text-muted);">
+            <div>CORE_TEMP: <span style="color: var(--accent);">38.2°C</span></div>
+            <div>STATUS: <span style="color: #6ef589;">ONLINE</span></div>
+            <div>UPTIME: 149d 04h 12m</div>
+            <div>PROTO: TLS_1.3_AES</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Main Content -->
+      <main style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="frame">
+          <div class="frame-header">:: SYSTEM_MANIFESTO ::</div>
+          <div class="screen">
+            <p class="screen-lead">> Welcome to the personal datalink node.</p>
+            <p style="color: #8fa0b3; margin-bottom: 8px;">
+              Documenting low-level experiments, network architecture, and digital artifact preservation.
+            </p>
+            <div style="margin-top: 6px;">
+              <span class="badge">SECURE</span>
+              <span class="badge">DECENTRALIZED</span>
+              <span class="badge">RAW_HTML</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="frame">
+          <div class="frame-header">:: TRANSMISSION_LOGS ::</div>
+          <div class="log-entry">
+            <span class="log-date">[2026.09.11]</span> Migrated core infrastructure to edge routing nodes.
+          </div>
+          <div class="log-entry">
+            <span class="log-date">[2026.08.24]</span> Compiled custom firmware; pipeline optimization verified.
+          </div>
+          <div class="log-entry">
+            <span class="log-date">[2026.07.02]</span> Initialized offline cold-storage redundancy checks.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bottom Status Bar -->
+    <div class="footer-bar">
+      <span>LOC: /DEV/TTY0</span>
+      <span>END OF PACKET // ALL RIGHTS RESERVED</span>
+    </div>
+  </div>
+
+</body>
+</html>
