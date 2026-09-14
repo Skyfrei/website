@@ -324,6 +324,63 @@ body {
   height: 8px;
   background: repeating-linear-gradient(90deg, #3d4a5a 0, #3d4a5a 2px, transparent 2px, transparent 4px);
 }
+.hud-profile-widget {
+  margin-top: 18px;
+  background: linear-gradient(180deg, #070d14 0%, #03060a 100%);
+  border: 1px solid #1a2a3a;
+  box-shadow: 
+    0 0 0 1px #0e151d,
+    inset 1px 1px 0 #3a536b,
+    inset -1px -1px 0 #000,
+    0 4px 12px rgba(0, 0, 0, 0.7);
+  padding: 6px 10px 10px;
+  position: relative;
+  /* Chamfered / clipped top-right corner */
+  clip-path: polygon(
+    0 0, 
+    calc(100% - 14px) 0, 
+    100% 14px, 
+    100% 100%, 
+    0 100%
+  );
+}
+
+.hud-profile-widget::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid #4a6885;
+  pointer-events: none;
+}
+
+.profile-header {
+  font-size: 11.5px;
+  font-weight: bold;
+  font-style: italic;
+  color: #cad8e6;
+  border-bottom: 1px solid #15222e;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.profile-header .chevron {
+  color: #72a9c4;
+  font-style: normal;
+  font-size: 10px;
+}
+
+.profile-body p {
+  color: #7d8c9e;
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0;
+}
 
   </style>
 </head>
@@ -347,12 +404,20 @@ body {
         
         <!-- Left Side: Nav Menu Buttons -->
         <nav class="hud-nav-column">
-          <a href="#" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
-          <a href="#" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
           <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
           <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
-          <a href="#" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
-          <a href="#" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+          <div class="hud-profile-widget">
+            <div class="profile-header">
+              <span class="chevron">&gt;</span> profile
+            </div>
+            <div class="profile-body">
+              <p>26, systems engineer, low-latency infrastructure, modern C++ / Rust, Arch Linux.</p>
+            </div>
+          </div>
         </nav>
 
         <!-- Center: Abstract Sci-Fi Art Piece -->
@@ -403,10 +468,10 @@ body {
         <div class="panel-header">:: latest from the blog ::</div>
         <div class="latest-blog-inner">
           <div class="blog-text-col">
-            <p class="blog-line">
-              <span class="sym">»</span> 07.13.2026 
-              <a href="blog.html" class="blog-title-link">Settling a 2006 conjecture on Huffman codes.</a>
-            </p>
+            <!--<p class="blog-line">-->
+            <!--  <span class="sym">»</span> 07.13.2026 -->
+            <!--  <a href="blog.html" class="blog-title-link">Settling a 2006 conjecture on Huffman codes.</a>-->
+            <!--</p>-->
             <a href="blog.html" class="panel-link">&gt; read more</a>
           </div>
           <div class="blog-thumbnail-box"></div>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: cv :: skyfrei</title>
+  <style>
+    :root {
+  --bg-deep: #000000;
+  --text-main: #b8c0cc;
+  --text-dim: #636e7b;
+  --text-bright: #ffffff;
+  --link-blue: #7094b7;
+  --font-mono: ui-monospace, "SF Mono", "Fira Code", "Courier New", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 2.5rem 1rem 3rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+}
+
+/* ================= LEFT COLUMN ================= */
+.content-col {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.doc-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.35rem;
+  font-weight: bold;
+  font-style: italic;
+  color: var(--text-bright);
+  margin-bottom: 0.75rem;
+}
+
+.intro-note {
+  color: #929da9;
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+.inline-link {
+  color: var(--link-blue);
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+  color: #a3c4e0;
+}
+
+.doc-section {
+  margin-bottom: 2.5rem;
+}
+
+/* Script / Italic Heading style matching original */
+.script-heading {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: normal;
+  color: var(--text-bright);
+  margin-bottom: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.leaf {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+/* Bullet list styles */
+.chron-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-left: 1.2rem;
+}
+
+.chron-list li {
+  position: relative;
+  line-height: 1.55;
+  color: #a3adb8;
+}
+
+.chron-list li::before {
+  content: "•";
+  position: absolute;
+  left: -1rem;
+  color: var(--text-dim);
+}
+
+.chron-list strong {
+  color: var(--text-bright);
+  font-weight: normal;
+}
+
+.project-list li {
+  margin-bottom: 0.5rem;
+}
+
+.chron-list code {
+  background-color: #0d1217;
+  border: 1px solid #1c2633;
+  padding: 0 4px;
+  font-size: 11.5px;
+  color: #72a9c4;
+}
+
+/* ================= METALLIC DIVIDER SEAM ================= */
+.metallic-spine {
+  width: 16px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    #0d131a 20%, 
+    #405063 45%, 
+    #7b8fa3 50%, 
+    #1e2530 55%, 
+    #090d12 80%, 
+    transparent 100%
+  );
+  box-shadow: -1px 0 0 #000, 1px 0 0 #000;
+  opacity: 0.85;
+}
+
+/* ================= RIGHT COLUMN (STICKY HUD) ================= */
+.sidebar-col {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.sticky-hud-frame {
+  position: sticky;
+  top: 2rem;
+  background-color: #040608;
+  border: 2px solid #1c222b;
+  box-shadow: 
+    0 0 0 1px #3c4856,
+    inset 0 0 0 1px #4e5a6a,
+    inset 2px 2px 0 #78889b,
+    inset -2px -2px 0 #0a0d11;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hud-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 6px;
+  border-bottom: 2px groove #232a35;
+}
+
+.title-badge {
+  font-size: 1.15rem;
+  font-style: italic;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 2px 10px;
+  background: linear-gradient(180deg, #182029 0%, #080b0f 100%);
+  border: 1px solid #4a5768;
+  box-shadow: inset 1px 1px 0 #8fa4be, inset -1px -1px 0 #000;
+  text-shadow: 0 0 4px rgba(255,255,255,0.3);
+}
+
+.hud-glyph {
+  color: #617387;
+  font-size: 14px;
+}
+
+.hud-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  color: #dbe2ea;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: bold;
+  font-style: italic;
+  background: linear-gradient(180deg, #1a222c 0%, #0d1217 60%, #05070a 100%);
+  border: 1px solid #333d4b;
+  box-shadow: inset 1px 1px 0 #596b82, inset -1px -1px 0 #000, 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.hud-btn .arrow {
+  color: #556272;
+  font-size: 10px;
+}
+
+.hud-btn.active {
+  background: linear-gradient(180deg, #273444 0%, #151d26 100%);
+  color: #fff;
+  border-color: #6a829e;
+  box-shadow: inset 1px 1px 0 #95adc7, inset -1px -1px 0 #000;
+}
+
+.hud-btn:hover:not(.active) {
+  background: linear-gradient(180deg, #222d3b 0%, #121921 100%);
+  color: #fff;
+}
+
+.sidebar-artbox {
+  height: 280px;
+  background: radial-gradient(circle at center, #0f1c29 0%, #030508 70%);
+  border: 1px solid #1e2632;
+  box-shadow: inset 0 0 15px #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.art-inner {
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(114, 169, 196, 0.3) 0%, transparent 65%),
+    linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.08) 50%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.08) 50%, transparent 52%);
+  background-size: 100% 100%, 25px 25px, 25px 25px;
+  filter: contrast(140%) brightness(85%);
+}
+
+/* ================= CHASSIS FOOTER ================= */
+.hud-footer-bar {
+  max-width: 1040px;
+  margin: 3rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #141b24 0%, #080b0f 100%);
+  border: 1px solid #2c3644;
+  box-shadow: inset 1px 1px 0 #526377, inset -1px -1px 0 #000;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #798696;
+}
+
+.footer-dots {
+  letter-spacing: 0.1em;
+  color: #4b5868;
+}
+
+.footer-info {
+  text-align: center;
+  flex-grow: 1;
+}
+
+.footer-grip {
+  width: 25px;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, #3d4a5a 0, #3d4a5a 2px, transparent 2px, transparent 4px);
+}
+
+@media (max-width: 820px) {
+  .page-container {
+    flex-direction: column-reverse;
+  }
+  .metallic-spine {
+    display: none;
+  }
+  .sidebar-col {
+    width: 100%;
+  }
+  .sticky-hud-frame {
+    position: static;
+  }
+  .sidebar-artbox {
+    display: none;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Left Column: Chronological Work & Projects -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: cv ::</h1>
+        <p class="intro-note">
+          For basic information about me, see the <a href="about.html" class="inline-link">"About"</a> page instead. This page is intended to complement the "About" page with miscellaneous, less interesting chronological information.
+        </p>
+      </header>
+
+      <!-- Section: Timeline -->
+      <section class="doc-section">
+        <h2 class="script-heading">Timeline <span class="leaf">✍</span></h2>
+        <ul class="chron-list">
+          <li><strong>2018–2021:</strong> B.Sc. studies in Business Informatics, University of Tirana.</li>
+          <li><strong>2021:</strong> Started developing systems-level software and low-latency tools.</li>
+          <li><strong>2022:</strong> Began Master's degree in Computer Science, University of Vienna.</li>
+          <li><strong>2023–2025:</strong> Specialized in template metaprogramming, custom memory allocators, and event-driven market infrastructure.</li>
+          <li><strong>2026:</strong> Defended Master's thesis on custom RL game simulation agents; maintained open-source systems libraries.</li>
+        </ul>
+      </section>
+
+      <!-- Section: Main Work -->
+      <section class="doc-section">
+        <h2 class="script-heading">Main work <span class="leaf">✍</span></h2>
+        <ul class="chron-list project-list">
+          <li>
+            <strong>Saya (2026)</strong>, a custom C++ real-time strategy simulation environment and reinforcement learning framework. Implements PPO and DQN without external reinforcement learning libraries, complete with action masking and LibTorch bindings.
+          </li>
+          <li>
+            <strong>Quant Engine (2024–2026)</strong>, an event-driven quantitative algorithmic trading engine written in C++20. Interfaces with Interactive Brokers TWS API via ZeroMQ pipelines; implements Johansen cointegration tests and Kalman filtering for multi-asset cointegration.
+          </li>
+          <li>
+            <strong>llvm-libc++ contribution (2026)</strong>, implemented <code>std::ranges::fold_right_last</code> for C++23 standard library compliance in LLVM.
+          </li>
+          <li>
+            <strong>Byte-level PDF Parser (2025)</strong>, a zero-dependency byte-level PDF parsing engine written in Rust for high-throughput metric extraction and tabular scanning.
+          </li>
+          <li>
+            <strong>Soul Tower (2024)</strong>, a 3D tower defense game built with Godot and C++ via GDExtension, implementing custom grid navigation and card-draft mechanics.
+          </li>
+          <li>
+            <strong>Lox-CPP (2023)</strong>, a complete tree-walk interpreter in modern C++ featuring custom AST evaluation, visitor patterns, and lexical scanner.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Section: Miscellany / Junkyard -->
+      <section class="doc-section">
+        <h2 class="script-heading">Miscellany/Junkyard (chronologically) <span class="leaf">✍</span></h2>
+        <ul class="chron-list junkyard-list">
+          <li><strong>gbf-combat-tracker (2025)</strong>, a multi-threaded live packet inspector and combat DPS metric visualizer built with Python and PySide6 via TShark packet sniffer.</li>
+          <li><strong>waybar-clipboard (2026)</strong>, GTK & Wayland clipboard history integrations for Waybar.</li>
+          <li><strong>clocktower-scripts (2025)</strong>, custom character script balancers and rule engines for social deduction games.</li>
+          <li><strong>hypr-parallettes (2026)</strong>, lightweight desktop daemon in Fish script dispatching calisthenics rest intervals directly into Waybar notifications.</li>
+          <li><strong>static-hud-generator (2026)</strong>, a dependency-free static site generator built in Rust using MiniJinja to produce monochrome HUD interfaces.</li>
+        </ul>
+      </section>
+
+      <!-- Section: Miscellaneous contributions -->
+      <section class="doc-section">
+        <h2 class="script-heading">Miscellaneous contributions <span class="leaf">✍</span></h2>
+        <ul class="chron-list contrib-list">
+          <li>Waybar Wayland status bar.</li>
+          <li>LLVM <code>libc++</code> repository.</li>
+          <li>Arch Linux AUR packaging.</li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- Metallic Vertical Divider Seam -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: Sticky HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        
+        <div class="hud-top-row">
+          <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">skyfrei</a>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn active"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!-- <a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a> -->
+        </nav>
+
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Chassis Status Bar -->
+  <footer class="hud-footer-bar">
+    <div class="footer-dots">+++ //////</div>
+    <div class="footer-info">
+      https://skyfrei.dev // (c) 2026 skyfrei // email: k@skyfrei.dev
+    </div>
+    <div class="footer-grip"></div>
+  </footer>
+</body>
+</html>

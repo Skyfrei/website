@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: webring :: skyfrei</title>
+  <style>
+    {{ css | safe }}
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Left Column: Webring Directory & Badges -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: webring ::</h1>
+        <p class="subtitle">a small ring of friends with hand-rolled sites.</p>
+      </header>
+
+    <!-- Section: My Own -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> my own</h2>
+        <div class="webring-grid single-col">
+          <div class="site-card">
+            <a href="https://skyfrei.dev" class="btn-slot">
+              <img src="gifs/skyfrei.gif" alt="skyfrei" width="88" height="31" class="badge-media" />
+            </a>
+            <div class="site-meta">
+              <span class="site-author">skyfrei</span>
+              <a href="https://skyfrei.dev" class="site-url">skyfrei.dev</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Others -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> others</h2>
+        <div class="webring-grid two-col">
+          {% for site in sites %}
+            <div class="site-card">
+              <a href="{{ site.url }}" target="_blank" rel="noopener noreferrer" class="btn-slot">
+                <img src="{{ site.badge }}" alt="{{ site.name }}" width="88" height="31" class="badge-media" loading="lazy" />
+              </a>
+              <div class="site-meta">
+                <span class="site-author">{{ site.name }}</span>
+                <a href="{{ site.url }}" target="_blank" rel="noopener noreferrer" class="site-url">{{ site.domain }}</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Section: More (88x31 Button Badges) -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> more</h2>
+        <div class="badges-wall">
+
+          <a href="https://hypr.land/" target="_blank" rel="noopener noreferrer" class="badge-88x31 btn-slot">
+            <img src="gifs/hyprland.gif" alt="hyprland" width="88" height="31" class="badge-media" />
+          </a>
+
+          <a href="https://www.gnu.org/gnu/linux-and-gnu.html" target="_blank" rel="noopener noreferrer" class="badge-88x31 btn-slot">
+            <img src="gifs/gnu-linux.gif" alt="GNU/Linux" width="88" height="31" class="badge-media" />
+          </a>
+        </div>
+        <p class="section-disclaimer">Bottom line: links ≠ endorsements.</p>
+      </section>
+    </main>
+
+    <!-- Metallic Vertical Divider Seam -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: Sticky HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        
+        <div class="hud-top-row">
+          <div class="title-badge">skyfrei</div>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <a href="webring.html" class="hud-btn active"><span>webring</span><span class="arrow">&gt;</span></a>
+        </nav>
+
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Chassis Status Bar -->
+  <footer class="hud-footer-bar">
+    <div class="footer-dots">+++ //////</div>
+    <div class="footer-info">
+      https://skyfrei.dev // (c) 2026 skyfrei // email: k@skyfrei.dev
+    </div>
+    <div class="footer-grip"></div>
+  </footer>
+</body>
+</html>

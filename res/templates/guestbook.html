@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: guestbook :: skyfrei</title>
+  <style>
+    {{ css | safe }}
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Left Column: Guestbook Form & Entries -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: guestbook ::</h1>
+        <p class="subtitle">leave a note. entries are moderated; please be civil.</p>
+      </header>
+
+      <!-- Sign Form -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> sign the book</h2>
+        
+        <form action="/guestbook.html" method="POST" class="sign-box">
+          <div class="field-group">
+            <label for="nickname" class="field-label">nickname</label>
+            <input type="text" id="nickname" name="nickname" required maxlength="32" autocomplete="off" class="hud-input" />
+          </div>
+
+          <div class="field-group">
+            <label for="message" class="field-label">message</label>
+            <textarea id="message" name="message" required rows="4" maxlength="500" class="hud-textarea"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="hud-submit-btn">post</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Entries Stream -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> entries</h2>
+        <div id="entries-stream" class="entries-stream">
+          {% for entry in entries %}
+            <article class="entry-row">
+              <div class="entry-header">
+                <span class="entry-author">from: {{ entry.name }}</span>
+                <time class="entry-date">{{ entry.date }}</time>
+              </div>
+              <p class="entry-msg">{{ entry.message }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+
+    <!-- Metallic Vertical Divider Seam -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: Sticky HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        <div class="hud-top-row">
+          <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">skyfrei</a>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn active"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+        </nav>
+
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Chassis Status Bar -->
+  <footer class="hud-footer-bar">
+    <div class="footer-dots">+++ //////</div>
+    <div class="footer-info">
+      https://skyfrei.dev // (c) 2026 skyfrei // email: k@skyfrei.dev
+    </div>
+    <div class="footer-grip"></div>
+  </footer>
+</body>
+</html>

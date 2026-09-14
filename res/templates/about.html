@@ -3,50 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ meta.title }}</title>
-
-  <!-- KaTeX CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
-
+  <title>:: about :: skyfrei</title>
   <style>
     {{ css | safe }}
   </style>
 </head>
 <body>
-  <div class="container">
-    <nav class="site-nav">
-      <a href="/" class="site-title">~/</a>
-      <div class="nav-links">
-        <a href="/posts">posts</a>
-        <a href="/projects">projects</a>
-        <a href="/about">about</a>
-      </div>
-    </nav>
-
-    <article>
-      <header class="post-header">
-        <h1>{{ meta.title }}</h1>
-        <div class="post-meta">
-          <time datetime="{{ meta.date }}">{{ meta.date }}</time>
-          <span>·</span>
-          <span>{{ meta.readTime }} min read</span>
-          <span>·</span>
-          <span>{{ meta.wordNum }} words</span>
-        </div>
-
-        {% if meta.tags %}
-        <div class="tags">
-          {% for tag in meta.tags %}
-            <span class="tag">#{{ tag }}</span>
-          {% endfor %}
-        </div>
-        {% endif %}
+  <div class="page-container">
+    
+    <!-- Left Column: Main Profile / Resume Content -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: about ::</h1>
+        <p class="greeting">
+         well here we are.
+        </p>
       </header>
 
-      <section class="post-content">
-        {{ body | safe }}
+      <!-- Section: Vital Statistics -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> vital statistics</h2>
+        <table class="stat-table">
+          <tbody>
+            <tr>
+              <td class="stat-key">handle</td>
+              <td class="stat-val">skyfrei</td>
+            </tr>
+            <tr>
+              <td class="stat-key">name</td>
+              <td class="stat-val">Klavio Tarka</td>
+            </tr>
+            <tr>
+              <td class="stat-key">age</td>
+              <td class="stat-val">26</td>
+            </tr>
+            <tr>
+              <td class="stat-key">field</td>
+              <td class="stat-val">computer science</td>
+            </tr>
+            <tr>
+              <td class="stat-key">locale</td>
+              <td class="stat-val">West Europe, graduate in Austria</td>
+            </tr>
+            <tr>
+              <td class="stat-key">languages</td>
+              <td class="stat-val">English, German, Albanian</td>
+            </tr>
+            <tr>
+              <td class="stat-key">coffee</td>
+              <td class="stat-val">whole bean, espresso</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
-    </article>
+
+      <!-- Section: Elsewhere on the wires -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> elsewhere on the net</h2>
+        <table class="stat-table compact-table">
+          <tbody>
+            <tr>
+              <td class="stat-key">github</td>
+              <td class="stat-val"><a href="https://github.com/Skyfrei" target="_blank" rel="noopener noreferrer">@skyfrei</a></td>
+            </tr>
+            <tr>
+              <td class="stat-key">email (primary)</td>
+              <td class="stat-val"><a href="mailto:k@skyfrei.dev">k@skyfrei.dev</a></td>
+            </tr>
+            <tr>
+              <td class="stat-key">PGP</td>
+              <td class="stat-val">
+                <a href="pub.asc" download="k@skyfrei.dev.pub">30AC 21F9 8CF8 BBEB</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="stat-key">Codeforces</td>
+              <td class="stat-val"><a href="https://codeforces.com/profile/Skyfrei" target="_blank" rel="noopener noreferrer">@skyfrei</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="section-note">
+          Feel free to reach out to me. I am also up for discussing projects and engineering topics. Just send me an e-mail.
+        </p>
+      </section>
+
+      <!-- Section: Employment & Skills -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> employment & technical stack</h2>
+        <p class="sub-label">Primary languages used to ship production & systems software:</p>
+        <ul class="bullet-list">
+          <li>C++</li>
+          <li>Rust</li>
+          <li>C</li>
+          <li>Python</li>
+        </ul>
+        <p class="greeting">
+          Currently working as a C++ developer for train rail systems.
+        </p>
+        <p class="sub-label">Domain breakdown:</p>
+        <ul class="bullet-list">
+          <li><strong>Linux & Toolchains:</strong> Arch Linux, Hyprland, Clang/LLVM.</li>
+        </ul>
+      </section>
+
+      <!-- Section: Hardware -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> hardware</h2>
+        <ul class="bullet-list">
+          <li><strong>Primary Workstation (SFF):</strong> AMD Ryzen 5 9600X, Intel Arc B580, ASRock B650I Lightning WiFi, Fractal Design Terra, NZXT C850 SFX.</li>
+          <li><strong>Peripherals:</strong> Royal Kludge RK R65 (QMK/VIA), MCHOSE G3A, Arturia MiniFuse 2, Crinacle Zero:2.</li>
+        </ul>
+      </section>
+
+      <!-- Section: Setup -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> setup</h2>
+        <ul class="bullet-list">
+          <li><strong>OS & Environment:</strong> Arch, Hyprland, Waybar, Fish shell, Foot.</li>
+          <li><strong>Editor:</strong> Neovim.</li>
+        </ul>
+      </section>
+
+      <!-- Section: Misc -->
+      <section class="doc-section">
+        <h2 class="section-heading"><span class="chevron">»</span> misc</h2>
+        <p class="sub-label">Non-systems interests:</p>
+        <ul class="bullet-list">
+          <li>Culinary literature, French & Asian cooking techniques.</li>
+          <li>Calisthenics.</li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- Metallic Vertical Divider Seam -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: Sticky HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        
+        <!-- Header badge & glyph -->
+        <div class="hud-top-row">
+          <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">skyfrei</a>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <!-- Vertical Menu Buttons -->
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn active"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="#" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!-- <a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+        </nav>
+
+        <!-- Metallic Wireframe Art Piece -->
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+
+      </div>
+    </aside>
+
   </div>
 </body>
 </html>
