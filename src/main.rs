@@ -5,6 +5,7 @@ mod converter;
 mod cv;
 mod guestbook;
 mod index;
+mod journal;
 mod metadata;
 mod webring;
 
@@ -57,6 +58,15 @@ fn main() {
         }
     }
     match guestbook::generate_guestbook_page() {
+        Ok(html) => {
+            println!("-------------------------------------\n\n\n\n\n");
+            println!("{}", html);
+        }
+        Err(e) => {
+            eprintln!("Error parsing {target}: {e}");
+        }
+    }
+    match journal::generate_journal_index() {
         Ok(html) => {
             println!("-------------------------------------\n\n\n\n\n");
             println!("{}", html);

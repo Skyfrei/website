@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: journal :: #statistics</title>
+  <style>
+    * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #030407;
+  color: #c8cbd0;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.page-container {
+  display: flex;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: calc(100vh - 42px);
+  padding: 40px 24px 20px;
+}
+
+/* Content Left Column */
+.content-col {
+  flex: 1;
+  padding-right: 28px;
+}
+
+.doc-header {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.5px;
+  color: #eff3f8;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #5c636d;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
+.reset-link {
+  color: #7b8491;
+  text-decoration: none;
+}
+
+.archive-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid #14171d;
+  padding-bottom: 12px;
+}
+
+.nav-range {
+  color: #4a505b;
+}
+
+.tab-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.year-tab {
+  display: inline-block;
+  padding: 1px 7px;
+  color: #6b7380;
+  border: 1px solid #1a1e26;
+  background: #090c10;
+  text-decoration: none;
+}
+
+.year-tab.active {
+  color: #ffffff;
+  border-color: #3f4b5d;
+  background: #141a22;
+}
+
+.tags-action {
+  padding-left: 6px;
+  color: #4a505b;
+  text-decoration: none;
+}
+
+/* Journal Entries Stream */
+.journal-table {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.journal-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.journal-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.math-sig {
+  color: #e5e9f0;
+  font-weight: bold;
+}
+
+.chevron {
+  color: #3b4452;
+}
+
+.entry-date {
+  color: #6b7380;
+}
+
+.tags-group {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: 6px;
+}
+
+.tag-badge {
+  background: #0d1624;
+  border: 1px solid #1c2e44;
+  color: #5d81ac;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  border-radius: 2px;
+  text-decoration: none;
+}
+
+.tag-badge.active {
+  border-color: #5d81ac;
+  color: #88c0d0;
+}
+
+/* Post Content & Typography */
+.journal-body-content {
+  color: #a0a6b2;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.journal-body-content p {
+  margin-bottom: 12px;
+}
+
+.journal-body-content ol,
+.journal-body-content ul {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+
+.journal-body-content li {
+  margin-bottom: 5px;
+}
+
+.journal-body-content blockquote {
+  border-left: 2px solid #23354d;
+  background: rgba(14, 25, 38, 0.35);
+  padding: 10px 14px;
+  font-style: italic;
+  color: #7da0c9;
+  margin: 10px 0 14px;
+}
+
+.journal-body-content code {
+  background: #0e141c;
+  padding: 1px 4px;
+  border: 1px solid #1a222e;
+  border-radius: 2px;
+  font-size: 0.85em;
+}
+
+.back-year {
+  margin-top: 36px;
+}
+
+.back-link {
+  color: #4a505b;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+/* Metallic Divider Seam */
+.metallic-spine {
+  width: 2px;
+  background: linear-gradient(180deg, #1f2a3a 0%, #0d121a 50%, #1f2a3a 100%);
+  border-left: 1px solid #070a0e;
+  border-right: 1px solid #28374d;
+  box-shadow: 0 0 8px rgba(35, 65, 102, 0.15);
+  margin: 0 24px;
+}
+
+/* HUD Sidebar */
+.sidebar-col {
+  width: 210px;
+}
+
+.sticky-hud-frame {
+  position: sticky;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hud-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #141b24;
+}
+
+a.title-badge,
+a.title-badge:hover,
+a.title-badge:visited,
+a.title-badge:active {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-decoration: none !important;
+  color: #e5e9f0 !important;
+  outline: none;
+  cursor: pointer;
+}
+
+.hud-glyph {
+  color: #48658a;
+  font-size: 1.1rem;
+}
+
+.hud-nav {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #141a22;
+  border-bottom: 1px solid #141a22;
+  padding: 4px 0;
+}
+
+.hud-btn {
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+  color: #7e8794;
+  font-style: italic;
+  font-weight: 600;
+  padding: 4px 6px;
+  font-size: 0.95rem;
+}
+
+.hud-btn .arrow {
+  font-style: normal;
+  color: #3b4452;
+}
+
+.hud-btn:hover,
+.hud-btn.active {
+  color: #ffffff;
+  background: #0f1622;
+}
+
+.sidebar-artbox {
+  width: 100%;
+  height: 220px;
+  border: 1px solid #1c2738;
+  background: radial-gradient(circle at 50% 50%, #0d1e33 0%, #020509 100%);
+  overflow: hidden;
+}
+
+.art-inner {
+  width: 100%;
+  height: 100%;
+  background: url("../img/sidebar.png") center/cover no-repeat;
+  opacity: 0.75;
+}
+
+/* Bottom Chassis Bar */
+.hud-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  border-top: 1px solid #141b24;
+  font-size: 0.75rem;
+  color: #434a56;
+  background: #020305;
+}
+
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Left Column: Journal Stream -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: journal :: #statistics</h1>
+        <p class="subtitle">
+          
+            showing notes tagged with #statistics. <a href="journal.html" class="reset-link">[view all]</a>
+          
+        </p>
+
+        <nav class="archive-nav">
+          <span class="nav-range">&lt; 2025 2026 &gt;</span>
+          <div class="tab-list">
+            <a href="journal.html" class="year-tab ">2026</a>
+            <span class="year-tab">2025</span>
+            <span class="year-tab">2024</span>
+            <span class="year-tab">2023</span>
+            <span class="year-tab">2022</span>
+            <span class="year-tab">2021</span>
+            <a href="tags.html" class="tags-action">&middot; tags</a>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Journal Stream Section -->
+      <section class="journal-table">
+        
+          <article class="journal-card">
+            <div class="journal-header-bar">
+              <span class="math-sig">μ</span>
+              <span class="chevron">»</span>
+              <time datetime="2026-09-14" class="entry-date">2026-09-14</time>
+
+              
+                <span class="tags-group">
+                  
+                    <a href="journal-tag-information-theory.html" class="tag-badge ">information-theory</a>
+                  
+                    <a href="journal-tag-compression.html" class="tag-badge ">compression</a>
+                  
+                    <a href="journal-tag-algorithms.html" class="tag-badge ">algorithms</a>
+                  
+                    <a href="journal-tag-statistics.html" class="tag-badge active">statistics</a>
+                  
+                </span>
+              
+            </div>
+
+            <div class="journal-body-content">
+              <p>Will give haskell a shot.</p>
+
+            </div>
+          </article>
+        
+      </section>
+
+      <div class="back-year">
+        <a href="#" class="back-link">&lt; 2025</a>
+      </div>
+    </main>
+
+    <!-- Metallic Spine -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        
+        <div class="hud-top-row">
+          <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">iczelia</a>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="journal.html" class="hud-btn active"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+        </nav>
+
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Chassis Status Bar -->
+  <footer class="hud-footer-bar">
+    <div class="footer-dots">+++ //////</div>
+    <div class="footer-info">
+      https://skyfrei.dev // (c) 2026 skyfrei // email: k@skyfrei.dev
+    </div>
+    <div class="footer-grip"></div>
+  </footer>
+</body>
+</html>

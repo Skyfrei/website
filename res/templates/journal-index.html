@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>:: journal :: {% if active_tag %}#{{ active_tag }}{% else %}2026{% endif %}</title>
+  <style>
+    {{ css | safe }}
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Left Column: Journal Stream -->
+    <main class="content-col">
+      <header class="doc-header">
+        <h1 class="page-title">:: journal :: {% if active_tag %}#{{ active_tag }}{% else %}2026{% endif %}</h1>
+        <p class="subtitle">
+          {% if active_tag %}
+            showing notes tagged with #{{ active_tag }}. <a href="journal.html" class="reset-link">[view all]</a>
+          {% else %}
+            short-form posts, dated.
+          {% endif %}
+        </p>
+
+        <nav class="archive-nav">
+          <span class="nav-range">&lt; 2025 2026 &gt;</span>
+          <div class="tab-list">
+            <a href="journal.html" class="year-tab {% if not active_tag %}active{% endif %}">2026</a>
+            <span class="year-tab">2025</span>
+            <span class="year-tab">2024</span>
+            <span class="year-tab">2023</span>
+            <span class="year-tab">2022</span>
+            <span class="year-tab">2021</span>
+            <a href="tags.html" class="tags-action">&middot; tags</a>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Journal Stream Section -->
+      <section class="journal-table">
+        {% for post in posts %}
+          <article class="journal-card">
+            <div class="journal-header-bar">
+              <span class="math-sig">{% if loop.index % 3 == 1 %}μ{% elif loop.index % 3 == 2 %}π{% else %}π ω{% endif %}</span>
+              <span class="chevron">»</span>
+              <time datetime="{{ post.meta.date }}" class="entry-date">{{ post.meta.date }}</time>
+
+              {% if post.meta.tags %}
+                <span class="tags-group">
+                  {% for tag in post.meta.tags %}
+                    <a href="journal-tag-{{ tag }}.html" class="tag-badge {% if active_tag == tag %}active{% endif %}">{{ tag }}</a>
+                  {% endfor %}
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="journal-body-content">
+              {{ post.body_html | safe }}
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+
+      <div class="back-year">
+        <a href="#" class="back-link">&lt; 2025</a>
+      </div>
+    </main>
+
+    <!-- Metallic Spine -->
+    <div class="metallic-spine"></div>
+
+    <!-- Right Column: HUD Sidebar -->
+    <aside class="sidebar-col">
+      <div class="sticky-hud-frame">
+        
+        <div class="hud-top-row">
+          <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">iczelia</a>
+          <div class="hud-glyph">✱</div>
+        </div>
+
+        <nav class="hud-nav">
+          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+          <a href="journal.html" class="hud-btn active"><span>journal</span><span class="arrow">&gt;</span></a>
+          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+        </nav>
+
+        <div class="sidebar-artbox">
+          <div class="art-inner"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom Chassis Status Bar -->
+  <footer class="hud-footer-bar">
+    <div class="footer-dots">+++ //////</div>
+    <div class="footer-info">
+      https://skyfrei.dev // (c) 2026 skyfrei // email: k@skyfrei.dev
+    </div>
+    <div class="footer-grip"></div>
+  </footer>
+</body>
+</html>
