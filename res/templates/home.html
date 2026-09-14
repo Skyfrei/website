@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>skyfrei</title>
+  <title>:: skyfrei ::</title>
   <style>
     {{ css | safe }}
   </style>
@@ -15,25 +15,27 @@
       
       <!-- Top Title Bar -->
       <header class="hud-titlebar">
-        <div class="title-badge">skyfrei</div>
+        <a href="index.html" class="title-badge" style="text-decoration: none; color: inherit;">skyfrei</a>
         <div class="title-pipes">
           <div class="pipe"></div>
           <div class="pipe"></div>
         </div>
-        <div class="hud-clock" id="clock">Sun13Sep2026, 21:13 GMT</div>
+        <div class="hud-clock" id="clock">Mon14Sep2026, 18:15:55 GMT</div>
       </header>
 
-      <!-- Main Central HUD Workspace -->
+      <!-- Main Central HUD Workspace Grid -->
       <main class="hud-workspace">
         
-        <!-- Left Side: Nav Menu Buttons -->
-        <nav class="hud-nav-column">
-          <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
-          <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
-          <a href="journal.html" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
-          <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
-          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
-          <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+      <div class="hud-left-col">
+          <nav class="hud-nav-column">
+            <a href="about.html" class="hud-btn"><span>about</span><span class="arrow">&gt;</span></a>
+            <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
+            <a href="journal.html" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
+            <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
+            <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+            <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
+          </nav>
+
           <div class="hud-profile-widget">
             <div class="profile-header">
               <span class="chevron">&gt;</span> profile
@@ -42,7 +44,7 @@
               <p>26, programmer, math lover.</p>
             </div>
           </div>
-        </nav>
+        </div>
 
         <!-- Center: Abstract Sci-Fi Art Piece -->
         <div class="hud-centerpiece">
@@ -50,57 +52,70 @@
         </div>
 
         <!-- Right Side: Floating Widget Boxes -->
-        <aside class="hud-widgets-column">
+        <aside class="hud-right-col">
           <!-- Widget: Updates -->
-          <div class="hud-panel-box">
+          <section class="hud-panel-box updates-box">
             <div class="panel-header">:: updates ::</div>
             <div class="panel-body">
-              <p class="update-headline"><span class="sym">»</span> 03.05.2026</p>
-              <p class="update-text">I contribute to LLVM now!</p>
+              <div class="update-item">
+                <p class="update-headline"><span class="sym">»</span> 03.05.2026</p>
+                <p class="update-text">I contribute to LLVM now!</p>
+              </div>
               <a href="blog.html" class="panel-link">&gt; view all updates</a>
             </div>
-          </div>
+          </section>
 
           <!-- Widget: Recent Activity -->
-          <div class="hud-panel-box">
+          <section class="hud-panel-box activity-box">
             <div class="panel-header">:: recent activity ::</div>
-            <div class="panel-body">
-              <div class="activity-row">
-                <span>github last activity</span>
-                <span class="time-dim">3d ago</span>
+            <div class="activity-content">
+              <!-- Github Activity -->
+              <div class="activity-group">
+                <span class="activity-subheading">github</span>
+                <div class="activity-row">
+                  <span class="activity-desc">last activity</span>
+                  <span class="activity-time">3d ago</span>
+                </div>
               </div>
-              <div class="activity-row">
-                <span>mastodon last post</span>
-                <span class="time-dim">10d ago</span>
+
+              <!-- Social Feeds -->
+              <div class="activity-group">
+                <div class="activity-row">
+                  <span class="activity-desc">mastodon last post</span>
+                  <span class="activity-time">10d ago</span>
+                </div>
+                <div class="activity-row">
+                  <span class="activity-desc">bluesky last post</span>
+                  <span class="activity-time">1d ago</span>
+                </div>
               </div>
-              <div class="activity-row">
-                <span>bluesky last post</span>
-                <span class="time-dim">1d ago</span>
-              </div>
-              <div class="status-subblock">
-                <span class="label-dim">currently</span>
-                <p class="status-msg">back to work...</p>
+
+              <!-- Current Status -->
+              <div class="activity-group status-group">
+                <span class="activity-subheading">currently</span>
+                <p class="activity-status">back to work...</p>
               </div>
             </div>
-          </div>
+          </section>
         </aside>
 
-      </main>
-
-      <!-- Lower Inset: Latest from the blog -->
-      <section class="hud-latest-blog">
-        <div class="panel-header">:: latest from the blog ::</div>
-        <div class="latest-blog-inner">
-          <div class="blog-text-col">
-            <!--<p class="blog-line">-->
-            <!--  <span class="sym">»</span> 07.13.2026 -->
-            <!--  <a href="blog.html" class="blog-title-link">Settling a 2006 conjecture on Huffman codes.</a>-->
-            <!--</p>-->
-            <a href="blog.html" class="panel-link">&gt; read more</a>
+        <!-- Lower Inset: Latest from the blog -->
+        <section class="hud-bottom-subrow">
+          <div class="latest-blog-header">:: latest from the blog ::</div>
+          <div class="latest-blog-inner">
+            <div class="blog-text-col">
+              <a href="blog.html" class="panel-link">&gt; read more</a>
+            </div>
+            
+            <div class="blog-thumbnails">
+              <div class="thumb-cell"></div>
+              <div class="thumb-cell"></div>
+              <div class="thumb-cell"></div>
+            </div>
           </div>
-          <div class="blog-thumbnail-box"></div>
-        </div>
-      </section>
+        </section>
+
+      </main>
 
       <!-- Bottom Chassis Status Bar -->
       <footer class="hud-footer">
@@ -113,7 +128,8 @@
 
     </div>
   </div>
-<script>
+
+  <script>
     function updateClock() {
       const el = document.getElementById("clock");
       if (!el) return;
