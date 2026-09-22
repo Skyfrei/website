@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using intrusive linked lists in order book</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    /* ==========================================================================
+   Base & Modern Academic Reset
+   ========================================================================== */
+:root {
+  --bg: #fafafa;
+  --fg: #1e1e1e;
+  --fg-muted: #666666;
+  --border: #e4e4e7;
+  --accent: #2563eb;
+  --code-bg: #f4f4f5;
+  --callout-bg: #f8fafc;
+  --max-width: 760px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141416;
+    --fg: #e2e2e8;
+    --fg-muted: #9999a1;
+    --border: #27272a;
+    --accent: #60a5fa;
+    --code-bg: #1e1e24;
+    --callout-bg: #18181b;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 17px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 2.5rem 1.25rem 5rem;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  line-height: 1.72;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Container & Layout
+   ========================================================================== */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+article {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Header & Metadata
+   ========================================================================== */
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-header h1 {
+  font-size: 2.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.75rem 0;
+}
+
+.post-meta {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.25rem 0;
+}
+
+/* ==========================================================================
+   Prose & Headings
+   ========================================================================== */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+  color: var(--fg);
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 2.5rem 0 1rem;
+}
+
+.post-content h1 { font-size: 1.55rem; letter-spacing: -0.015em; }
+.post-content h2 { font-size: 1.32rem; }
+.post-content h3 { font-size: 1.15rem; }
+
+.post-content p {
+  margin: 1.25rem 0;
+}
+
+.post-content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.post-content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.post-content ul,
+.post-content ol {
+  padding-left: 1.6rem;
+  margin: 1.25rem 0;
+}
+
+.post-content li {
+  margin: 0.35rem 0;
+}
+
+/* ==========================================================================
+   Theorems & Blockquotes (Iczelia-style callouts)
+   ========================================================================== */
+blockquote {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--callout-bg);
+  border-left: 3px solid var(--fg-muted);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.96rem;
+  color: var(--fg);
+}
+
+blockquote p {
+  margin: 0.5rem 0;
+}
+
+blockquote p:first-child {
+  margin-top: 0;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Code Blocks & Inline Code
+   ========================================================================== */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-bg);
+  padding: 0.2em 0.38em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 1.6rem 0;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+th, td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--fg-muted);
+  border-bottom: 2px solid var(--border);
+}
+
+tr:hover {
+  background-color: var(--callout-bg);
+}
+
+/* ==========================================================================
+   KaTeX Math Fixes & Responsiveness
+   ========================================================================== */
+/* Display math container: allow horizontal scroll on narrow screens */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.75rem 0;
+  margin: 1.5rem 0;
+  scrollbar-width: thin;
+}
+
+.math-err {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+  </style>
+</head>
+<body>
+  <main class="container">
+    <article>
+      <header class="post-header">
+        <h1>Using intrusive linked lists in order book</h1>
+        <div class="post-meta">
+          <time datetime="2026-07-01">2026-07-01</time>
+          <span> • 5 min read</span>
+          <span> • 1088 words</span>
+        </div>
+
+        
+        <div class="tags">
+          
+            <span class="tag">#C++</span>
+          
+            <span class="tag">#Trading</span>
+          
+        </div>
+        
+      </header>
+
+      <hr>
+
+      <!-- '| safe' is critical: prevents escaping KaTeX math markup and generated tags -->
+      <section class="post-content">
+        <h2>Working with order books</h2>
+<p>Generally these order books are split into
+levels ranging from L1, L2, L3 and sometimes order
+books which aren't accessible to normal people but
+only institutes.</p>
+<p>Typically order books also split the market
+into different sections as well, based on how an order
+is being placed. Some order can be market orders which buys
+or sells an asset immediately. Some other orders wait until
+it reaches your destined price etc. This blog for the time
+being won't look at all these (as its still a WIP) but mainly
+just look at implementation of making the order books
+performative.</p>
+<h2>Ways of implementing order books</h2>
+<p>Some of these implementations were tested in real trading,
+although not tested extensively, but from what little
+real trading was done with them they looked to function
+properly.
+My first initial implementation of an order book was
+plainly using a linked list (yes...).</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">std::map&lt;</span><span style="color:#95a99f;">double</span><span style="color:#e4e4e4;">, LinkedList </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">, Compare&gt; order_book;
+</span></pre>
+<p>The ordered map is what holds the key (the price point where at least
+someone has placed an order for an asset). And the value of these
+keys is represented by a linked list, holding client orders.
+The compare is one of the things  I stated earlier that this blog won't go over
+for the time being, but its simply a way to order the order book.</p>
+<pre style="background-color:#181818;">
+<span style="color:#95a99f;">struct </span><span style="color:#e4e4e4;">client_order {
+</span><span style="color:#e4e4e4;">  </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> val;
+</span><span style="color:#e4e4e4;">  list items;
+</span><span style="color:#e4e4e4;">  </span><span style="font-weight:bold;color:#e4e4e4;">client_order</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int </span><span style="color:#e4e4e4;">order_id) : val(order_id) {}
+</span><span style="color:#e4e4e4;">};
+</span></pre>
+<p>A normal implementation of a linked list does heap allocation at least once.
+This allocation is simply to add a new node in the list. Obviously,
+asking the kernel to find some memory, send the address back for where
+your linked list node will fit and then putting the memory in the address
+takes time, especially when we are dealing with order books, which are
+constantly working with new keys for our map. A normal implementation
+of this would look like as above.</p>
+<pre style="background-color:#181818;">
+<span style="color:#95a99f;">void </span><span style="font-weight:bold;color:#e4e4e4;">append</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int </span><span style="color:#e4e4e4;">order_id) </span><span style="font-style:italic;color:#cc6666;">/* you can replace order_id with order info, im using
+</span><span style="font-style:italic;color:#cc6666;">                            an integer here just to simplify */ </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">  </span><span style="font-weight:bold;color:#ffdd33;">if </span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">!</span><span style="color:#e4e4e4;">head) {
+</span><span style="color:#e4e4e4;">    head </span><span style="font-weight:bold;color:#ffdd33;">= new </span><span style="color:#e4e4e4;">Node(order_id);
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">return</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">  }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">  </span><span style="color:#95a99f;">auto</span><span style="color:#e4e4e4;"> curr </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> head;
+</span><span style="color:#e4e4e4;">  </span><span style="font-weight:bold;color:#ffdd33;">while </span><span style="color:#e4e4e4;">(curr-&gt;right) {
+</span><span style="color:#e4e4e4;">    curr </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> curr-&gt;right;
+</span><span style="color:#e4e4e4;">  }
+</span><span style="color:#e4e4e4;">  curr-&gt;right </span><span style="font-weight:bold;color:#ffdd33;">= new </span><span style="color:#e4e4e4;">Node(order_id);
+</span><span style="color:#e4e4e4;">  curr-&gt;right-&gt;left </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> curr;
+</span><span style="color:#e4e4e4;">}
+</span></pre>
+<h3>The saviour for this comes from ... the kernel</h3>
+<p>Intrusive linked lists, a mess to understand as it looks
+almost identical to what linked lists look like. The best
+explanation I could give for them is, instead of having
+an object which points to the next object. The object itself,
+contains the thing that points to the next object's pointer.
+As you can see, there is no need for heap allocation here.
+Below is an implementation of this and the way you append to
+it.</p>
+<pre style="background-color:#181818;">
+<span style="font-style:italic;color:#cc6666;">// The &quot;pointers&quot;, you can also think of these as carabiners.
+</span><span style="color:#95a99f;">struct </span><span style="color:#e4e4e4;">list {
+</span><span style="color:#e4e4e4;">  list </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">right </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">nullptr</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">  list </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">left </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">nullptr</span><span style="color:#e4e4e4;">; 
+</span><span style="color:#e4e4e4;">};
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#95a99f;">struct </span><span style="color:#e4e4e4;">client_order {
+</span><span style="color:#e4e4e4;">  </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> val;
+</span><span style="color:#e4e4e4;">  list items;
+</span><span style="color:#e4e4e4;">  </span><span style="font-weight:bold;color:#e4e4e4;">client_order</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int </span><span style="color:#e4e4e4;">order_id) : val(order_id) {}
+</span><span style="color:#e4e4e4;">};
+</span></pre>
+<p>And the magic happens here, a little knowledge of how
+memory works underneath is necessary here.</p>
+<pre style="background-color:#181818;">
+<span style="font-style:italic;color:#cc6666;">// This is what it would look like with client order instead of an integer
+</span><span style="color:#95a99f;">void </span><span style="font-weight:bold;color:#e4e4e4;">append</span><span style="color:#e4e4e4;">(client_order </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">order) {
+</span><span style="color:#e4e4e4;">  list </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">curr </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> tail.left; </span><span style="font-style:italic;color:#cc6666;">// i decide to keep track of tail and head to avoid iterating the whole list
+</span><span style="color:#e4e4e4;">  curr-&gt;right </span><span style="font-weight:bold;color:#ffdd33;">= &amp;</span><span style="color:#e4e4e4;">order-&gt;items;
+</span><span style="color:#e4e4e4;">  order-&gt;items.left </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> curr;
+</span><span style="color:#e4e4e4;">  order-&gt;items.right </span><span style="font-weight:bold;color:#ffdd33;">= &amp;</span><span style="color:#e4e4e4;">tail;
+</span><span style="color:#e4e4e4;">  tail.left </span><span style="font-weight:bold;color:#ffdd33;">= &amp;</span><span style="color:#e4e4e4;">order-&gt;items;
+</span><span style="color:#e4e4e4;">}
+</span><span style="font-style:italic;color:#cc6666;">//No heap allocation :)
+</span></pre>
+<p>And to delete everything once we are done using them (realistically this
+never happens as you probably never want to fully delete the whole
+order book, but you get an idea how removing singular orders works)</p>
+<pre style="background-color:#181818;">
+<span style="font-weight:bold;color:#ffdd33;">~</span><span style="color:#e4e4e4;">linked_list() {
+</span><span style="color:#e4e4e4;">  list </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">curr </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> head.right;
+</span><span style="color:#e4e4e4;">  </span><span style="font-weight:bold;color:#ffdd33;">while </span><span style="color:#e4e4e4;">(curr </span><span style="font-weight:bold;color:#ffdd33;">!= &amp;</span><span style="color:#e4e4e4;">tail) {
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">auto</span><span style="color:#e4e4e4;"> next </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> curr-&gt;right;
+</span><span style="color:#e4e4e4;">    client_order </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">order </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="font-style:italic;color:#cc6666;">/* we point to the carabiner, not the actual object address start initially */
+</span><span style="color:#e4e4e4;">        (client_order </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">)((</span><span style="color:#95a99f;">char </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;">)curr </span><span style="font-weight:bold;color:#ffdd33;">- </span><span style="color:#e4e4e4;">offsetof(client_order, items)); 
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">delete</span><span style="color:#e4e4e4;"> order;
+</span><span style="color:#e4e4e4;">    curr </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> next;
+</span><span style="color:#e4e4e4;">  }
+</span><span style="color:#e4e4e4;">}
+</span></pre>
+<h2>Lets give up everything and go against Hedges using ILLs?</h2>
+<p>Please, no. This is just a way to build your own order
+books in case you aren't rich to pay the subscription fees
+of the brokers for the order books, as each level of an order
+book gives more information regarding that book, it also
+goes up in price. How I use this in my trading strategies in
+case said strategies use the order book at all, is by
+initially giving a cooldown to the trader and in the meantime
+building the orderbook via information you can find from the broker
+such as how many shares are being sold right now by this price etc.</p>
+<h2>Performance between the two based on tests.</h2>
+<p>All tests here were run without any compiler optimization,
+and I use Catch2 testing suite for calling the test
+functions which is how the seed is generated. Additionally, the code
+below is what I use to test and how I got the numbers in the first place.</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">TEST_CASE(</span><span style="color:#73c936;">&quot;Order book performance test&quot;</span><span style="color:#e4e4e4;">, </span><span style="color:#73c936;">&quot;[order-book-perf]&quot;</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">  { </span><span style="font-style:italic;color:#cc6666;">// perf test
+</span><span style="color:#e4e4e4;">    trader::orderbook::NonIntrusiveOrderBook a;
+</span><span style="color:#e4e4e4;">    trader::orderbook::IntrusiveOrderBook a1;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> magic_seed </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">42</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> prices_val </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">1000</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> orders_per_price </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">500</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    std::default_random_engine e1(magic_seed);
+</span><span style="color:#e4e4e4;">    std::uniform_real_distribution&lt;</span><span style="color:#95a99f;">double</span><span style="color:#e4e4e4;">&gt; uniform_dist(</span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">, </span><span style="color:#cc8c3c;">100</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    std::vector&lt;</span><span style="color:#95a99f;">double</span><span style="color:#e4e4e4;">&gt; prices;
+</span><span style="color:#e4e4e4;">    prices.reserve(prices_val </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;"> orders_per_price);
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">for </span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> i </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">; i </span><span style="font-weight:bold;color:#ffdd33;">&lt;</span><span style="color:#e4e4e4;"> prices_val </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;"> orders_per_price; i</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">      prices.push_back(std::</span><span style="font-weight:bold;color:#e4e4e4;">round</span><span style="color:#e4e4e4;">(uniform_dist(e1) </span><span style="font-weight:bold;color:#ffdd33;">* </span><span style="color:#cc8c3c;">100.0</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">/ </span><span style="color:#cc8c3c;">100.0</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">    std::uniform_int_distribution&lt;</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;">&gt; id_dist(
+</span><span style="color:#e4e4e4;">        </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">, (prices_val </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;"> orders_per_price) </span><span style="font-weight:bold;color:#ffdd33;">- </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">auto</span><span style="color:#e4e4e4;"> get_random_id </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">[</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">e1, </span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">id_dist]() -&gt; int { </span><span style="font-weight:bold;color:#ffdd33;">return </span><span style="color:#e4e4e4;">id_dist(e1); };
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> price_idx </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    std::chrono::time_point t </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">std::chrono::high_resolution_clock::now();
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">for </span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> i </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">; i </span><span style="font-weight:bold;color:#ffdd33;">&lt;</span><span style="color:#e4e4e4;"> prices_val; i</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">      </span><span style="font-weight:bold;color:#ffdd33;">for </span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> j </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">; j </span><span style="font-weight:bold;color:#ffdd33;">&lt;</span><span style="color:#e4e4e4;"> orders_per_price; j</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">double</span><span style="color:#e4e4e4;"> p </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> prices[price_idx</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">];
+</span><span style="color:#e4e4e4;">        a.append(p);
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if </span><span style="color:#e4e4e4;">(j </span><span style="font-weight:bold;color:#ffdd33;">% </span><span style="color:#cc8c3c;">4 </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">)
+</span><span style="color:#e4e4e4;">          a.remove(p, get_random_id());
+</span><span style="color:#e4e4e4;">      }
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    std::chrono::time_point t1 </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">std::chrono::high_resolution_clock::now();
+</span><span style="color:#e4e4e4;">    price_idx </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">for </span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> i </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">; i </span><span style="font-weight:bold;color:#ffdd33;">&lt;</span><span style="color:#e4e4e4;"> prices_val; i</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">      </span><span style="font-weight:bold;color:#ffdd33;">for </span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">int</span><span style="color:#e4e4e4;"> j </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">; j </span><span style="font-weight:bold;color:#ffdd33;">&lt;</span><span style="color:#e4e4e4;"> orders_per_price; j</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">double</span><span style="color:#e4e4e4;"> p </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> prices[price_idx</span><span style="font-weight:bold;color:#ffdd33;">++</span><span style="color:#e4e4e4;">];
+</span><span style="color:#e4e4e4;">        a1.append(p);
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if </span><span style="color:#e4e4e4;">(j </span><span style="font-weight:bold;color:#ffdd33;">% </span><span style="color:#cc8c3c;">4 </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">)
+</span><span style="color:#e4e4e4;">          a1.remove(p, get_random_id());
+</span><span style="color:#e4e4e4;">      }
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">    std::chrono::time_point t2 </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">std::chrono::high_resolution_clock::now();
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">auto</span><span style="color:#e4e4e4;"> d </span><span style="font-weight:bold;color:#ffdd33;">=
+</span><span style="color:#e4e4e4;">        std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(t1 </span><span style="font-weight:bold;color:#ffdd33;">-</span><span style="color:#e4e4e4;"> t).count();
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">auto</span><span style="color:#e4e4e4;"> d1 </span><span style="font-weight:bold;color:#ffdd33;">=
+</span><span style="color:#e4e4e4;">        std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(t2 </span><span style="font-weight:bold;color:#ffdd33;">-</span><span style="color:#e4e4e4;"> t1).count();
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    std::cout </span><span style="font-weight:bold;color:#ffdd33;">&lt;&lt; </span><span style="color:#73c936;">&quot;Intrusive: &quot; </span><span style="font-weight:bold;color:#ffdd33;">&lt;&lt;</span><span style="color:#e4e4e4;"> d1 </span><span style="font-weight:bold;color:#ffdd33;">&lt;&lt; </span><span style="color:#73c936;">&quot;ms | Non-Intrusive: &quot; </span><span style="font-weight:bold;color:#ffdd33;">&lt;&lt;</span><span style="color:#e4e4e4;"> d </span><span style="font-weight:bold;color:#ffdd33;">&lt;&lt; </span><span style="color:#73c936;">&quot;ms</span><span style="color:#cc8c3c;">\n</span><span style="color:#73c936;">&quot;</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">  }
+</span><span style="color:#e4e4e4;">}
+</span></pre>
+<p>For 1000 different price vals and each
+val entry has another 500 orders with that price</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">Intrusive: 188ms | Non-Intrusive: 353ms
+</span></pre>
+<p>For 1000 different price vals and each val
+entry has another 1000 orders with that price</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">Intrusive: 485ms | Non-Intrusive: 1333ms
+</span></pre>
+<p>Biggest differnce can be seen here,
+5000 different price values by 1000 order per price.</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">Intrusive: 26940ms | Non-Intrusive: 99379ms
+</span></pre>
+
+      </section>
+    </article>
+  </main>
+</body>
+</html>

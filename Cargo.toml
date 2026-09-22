@@ -9,3 +9,4 @@ minijinja = "2.24.0"
 pulldown-cmark = "0.13.4"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_yaml = "0.9.34"
+syntect = "5.3.0"
