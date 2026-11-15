@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>https://skyfrei.dev/</loc></url>
+    <url><loc>https://skyfrei.dev/cv.html</loc></url>
+    <url><loc>https://skyfrei.dev/blog.html</loc></url>
+    <url><loc>https://skyfrei.dev/about.html</loc></url>
+    <url><loc>https://skyfrei.dev/guestbook.html</loc></url>
+    <url><loc>https://skyfrei.dev/journal.html</loc></url>
+    <!-- Add your specific markdown/blog post slugs here dynamically if your generator tracks them -->
+    <url><loc>https://skyfrei.dev/future_sugoroku.html</loc></url>
+    <url><loc>https://skyfrei.dev/haskell-scraper.html</loc></url>
+    <url><loc>https://skyfrei.dev/intrusive-lists.html</loc></url>
+</urlset>

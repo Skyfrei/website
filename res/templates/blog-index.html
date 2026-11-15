@@ -14,7 +14,7 @@
     <!-- Left Column: Blog Feed & Archives -->
     <main class="content-col">
       <header class="doc-header">
-        <h1 class="page-title">:: blog :: {% if active_tag %}#{{ active_tag }}{% else %}2026{% endif %}</h1>
+        <h1 class="page-title">:: blog :: {% if active_tag %}#{{ active_tag }}{% elif current_year %}{{ current_year }}{% endif %}</h1>
         <p class="subtitle">
           {% if active_tag %}
             showing posts tagged with #{{ active_tag }}. <a href="blog.html" class="reset-link">[view all]</a>
@@ -22,16 +22,21 @@
             long-form posts, dated.
           {% endif %}
         </p>
-
+      
         <nav class="archive-nav">
-          <span class="nav-range">&lt; 2025 2026 &gt;</span>
+          {% if years | length > 1 %}
+            <span class="nav-range">&lt; {{ years | last }} {{ years | first }} &gt;</span>
+          {% endif %}
+          
           <div class="tab-list">
-            <a href="blog.html" class="year-tab {% if not active_tag %}active{% endif %}">2026</a>
-            <span class="year-tab">2025</span>
-            <span class="year-tab">2024</span>
-            <span class="year-tab">2023</span>
-            <span class="year-tab">2022</span>
-            <span class="year-tab">2021</span>
+            {% for year in years %}
+              {% if loop.first %}
+                <a href="blog.html" class="year-tab {% if not active_tag %}active{% endif %}">{{ year }}</a>
+              {% else %}
+                {# Link to separate year archives if generated, or keep as a span #}
+                <span class="year-tab">{{ year }}</span>
+              {% endif %}
+            {% endfor %}
             <a href="webring.html" class="tags-action">tags</a>
           </div>
         </nav>
@@ -63,9 +68,11 @@
         {% endfor %}
       </section>
 
-      <div class="back-year">
-        <a href="#" class="back-link">&lt; 2025</a>
-      </div>
+      {% if years | length > 1 %}
+        <div class="back-year">
+          <a href="#" class="back-link">&lt; {{ years[1] }}</a>
+        </div>
+      {% endif %}
     </main>
 
     <!-- Metallic Vertical Divider Seam -->
@@ -85,7 +92,7 @@
           <a href="cv.html" class="hud-btn"><span>cv</span><span class="arrow">&gt;</span></a>
           <a href="journal.html" class="hud-btn"><span>journal</span><span class="arrow">&gt;</span></a>
           <a href="blog.html" class="hud-btn"><span>blog</span><span class="arrow">&gt;</span></a>
-          <a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>
+          <!--<a href="guestbook.html" class="hud-btn"><span>guestbook</span><span class="arrow">&gt;</span></a>-->
           <!--<a href="webring.html" class="hud-btn"><span>webring</span><span class="arrow">&gt;</span></a>-->
         </nav>
 

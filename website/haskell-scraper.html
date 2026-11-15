@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Making a scrapper & system notifier for research papers in haskell</title>
+  <title>Making an RSS & system notifier for research papers in haskell</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <style>
@@ -22,6 +22,7 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -258,17 +259,116 @@ tr:hover {
   border-radius: 4px;
 }
 
+.sidebar-artbox {
+  height: 280px;
+  background: radial-gradient(circle at center, #0f1c29 0%, #030508 70%);
+  border: 1px solid #1e2632;
+  box-shadow: inset 0 0 15px #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.art-inner {
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(114, 169, 196, 0.3) 0%, transparent 65%),
+    linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.08) 50%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.08) 50%, transparent 52%);
+  background-size: 100% 100%, 25px 25px, 25px 25px;
+  filter: contrast(140%) brightness(85%);
+}
+
+@media (max-width: 820px) {
+  .page-container {
+    flex-direction: column-reverse;
+  }
+  .metallic-spine {
+    display: none;
+  }
+  .sidebar-col {
+    width: 100%;
+  }
+  .sticky-hud-frame {
+    position: static;
+  }
+  .sidebar-artbox {
+    display: none;
+  }
+}
+
+.hud-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hud-glyph {
+  color: #617387;
+  font-size: 14px;
+}
+.hud-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  color: #dbe2ea;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: bold;
+  font-style: italic;
+  background: linear-gradient(180deg, #1a222c 0%, #0d1217 60%, #05070a 100%);
+  border: 1px solid #333d4b;
+  box-shadow: inset 1px 1px 0 #596b82, inset -1px -1px 0 #000, 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.hud-btn .arrow {
+  color: #556272;
+  font-size: 10px;
+}
+
+.hud-btn.active {
+  background: linear-gradient(180deg, #273444 0%, #151d26 100%);
+  color: #fff;
+  border-color: #6a829e;
+  box-shadow: inset 1px 1px 0 #95adc7, inset -1px -1px 0 #000;
+}
+
+.hud-btn:hover:not(.active) {
+  background: linear-gradient(180deg, #222d3b 0%, #121921 100%);
+  color: #fff;
+}
+.hud-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 6px;
+  border-bottom: 2px groove #232a35;
+}
+.title-badge {
+  font-size: 1.15rem;
+  font-style: italic;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 2px 10px;
+  background: linear-gradient(180deg, #182029 0%, #080b0f 100%);
+  border: 1px solid #4a5768;
+  box-shadow: inset 1px 1px 0 #8fa4be, inset -1px -1px 0 #000;
+  text-shadow: 0 0 4px rgba(255,255,255,0.3);
+}
+
   </style>
 </head>
 <body>
   <main class="container">
     <article>
       <header class="post-header">
-        <h1>Making a scrapper & system notifier for research papers in haskell</h1>
+        <h1>Making an RSS & system notifier for research papers in haskell</h1>
         <div class="post-meta">
           <time datetime="2026-09-18">2026-09-18</time>
-          <span> • 3 min read</span>
-          <span> • 624 words</span>
+          <span> • 6 min read</span>
+          <span> • 1319 words</span>
         </div>
 
         
@@ -373,9 +473,158 @@ and no mutability the program is somehow still performant.</p>
 </span><span style="color:#e4e4e4;">Title: Navigating Supply Shocks: Sector Resilience and Production Prices Through Stochastic Input–Output Modeling
 </span><span style="color:#e4e4e4;">---
 </span></pre>
+<h2>Upgrades to the system</h2>
+<p>Everything works fine now for the most part, I get notified
+and the RSS feeds are parsed properly. Everytime my system is
+notified I can click the notification and it redirects me to
+the paper. This is good and all but I would rather my gaming pc
+not use 100MB constantly and also every hour have to go through a
+massive spike in TCP packets. So the idea now is, since I already
+have a homeserver, I can set up a centralized notifier
+running constantly in my homeserver which acts as a publisher for
+all clients connected to this socket. I will be using MQTT
+for this.</p>
+<h3>MQTT-3.1.1 Client</h3>
+<p>Following the standard of mqtt <a href="https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html">MQTT 3.1.1</a>
+I have this struct which encapsualtes a full package being sent
+or received. The struct is pretty simplistic, as it's necessary
+to be performant. Generally fixed header is almost never 5 bytes,
+but instead of heap allocating vectors i just decide to hold
+5 bytes in an array and then during encoding I figure out
+what byte should be sent or not.</p>
+<pre style="background-color:#181818;">
+<span style="color:#e4e4e4;">#[derive(Debug)]
+</span><span style="font-weight:bold;color:#ffdd33;">pub </span><span style="color:#95a99f;">struct </span><span style="color:#e4e4e4;">Message {
+</span><span style="color:#e4e4e4;">    fixed_header: [</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">; 5],
+</span><span style="color:#e4e4e4;">    var_header: Vec&lt;</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">&gt;,
+</span><span style="color:#e4e4e4;">    payload: Vec&lt;</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">&gt;,
+</span><span style="color:#e4e4e4;">    state: State,
+</span><span style="color:#e4e4e4;">}
+</span></pre>
+<p>The encoding to bytes is shown below together with how to
+encode the length of the whole payload (variable header +
+payload length, as specified by the standard). Encoding
+using variable length encoding algorithm, and through it
+we can represent a package length up to 268M bytes (~260MB).</p>
+<pre style="background-color:#181818;">
+<span style="font-weight:bold;color:#ffdd33;">pub </span><span style="color:#95a99f;">fn </span><span style="font-weight:bold;color:#e4e4e4;">to_bytes</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">self) -&gt; Vec&lt;</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">&gt; {
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let</span><span style="color:#e4e4e4;"> payload_len </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="font-weight:bold;color:#e4e4e4;">encode_length</span><span style="color:#e4e4e4;">(self.var_header.</span><span style="font-weight:bold;color:#e4e4e4;">len</span><span style="color:#e4e4e4;">() </span><span style="font-weight:bold;color:#ffdd33;">+ </span><span style="color:#e4e4e4;">self.payload.</span><span style="font-weight:bold;color:#e4e4e4;">len</span><span style="color:#e4e4e4;">());
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let</span><span style="color:#e4e4e4;"> msg_len </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">1 </span><span style="font-weight:bold;color:#ffdd33;">+</span><span style="color:#e4e4e4;"> payload_len.</span><span style="color:#cc8c3c;">1 </span><span style="font-weight:bold;color:#ffdd33;">+ </span><span style="color:#e4e4e4;">self.var_header.</span><span style="font-weight:bold;color:#e4e4e4;">len</span><span style="color:#e4e4e4;">() </span><span style="font-weight:bold;color:#ffdd33;">+ </span><span style="color:#e4e4e4;">self.payload.</span><span style="font-weight:bold;color:#e4e4e4;">len</span><span style="color:#e4e4e4;">();
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> bytes </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#95a99f;">Vec</span><span style="color:#e4e4e4;">::with_capacity(msg_len);
+</span><span style="color:#e4e4e4;">    bytes.</span><span style="font-weight:bold;color:#e4e4e4;">push</span><span style="color:#e4e4e4;">(self.fixed_header[</span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">]);
+</span><span style="color:#e4e4e4;">    bytes.</span><span style="font-weight:bold;color:#e4e4e4;">extend_from_slice</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">payload_len.</span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">[</span><span style="color:#cc8c3c;">0</span><span style="font-weight:bold;color:#ffdd33;">..</span><span style="color:#e4e4e4;">payload_len.</span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">]);
+</span><span style="color:#e4e4e4;">    bytes.</span><span style="font-weight:bold;color:#e4e4e4;">extend_from_slice</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">self.var_header);
+</span><span style="color:#e4e4e4;">    bytes.</span><span style="font-weight:bold;color:#e4e4e4;">extend_from_slice</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">self.payload);
+</span><span style="color:#e4e4e4;">    bytes
+</span><span style="color:#e4e4e4;">}
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#95a99f;">fn </span><span style="font-weight:bold;color:#e4e4e4;">encode_length</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">mut </span><span style="color:#e4e4e4;">x: </span><span style="color:#95a99f;">usize</span><span style="color:#e4e4e4;">) -&gt; ([</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">; 4], </span><span style="color:#95a99f;">usize</span><span style="color:#e4e4e4;">) {
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> bytes </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">[</span><span style="color:#cc8c3c;">0</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">; </span><span style="color:#cc8c3c;">4</span><span style="color:#e4e4e4;">];
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> count </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">loop </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">(x </span><span style="font-weight:bold;color:#ffdd33;">% </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">as </span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        x </span><span style="font-weight:bold;color:#ffdd33;">/= </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if</span><span style="color:#e4e4e4;"> x </span><span style="font-weight:bold;color:#ffdd33;">&gt; </span><span style="color:#cc8c3c;">0 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">|= </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">        bytes[count] </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> encoded_byte;
+</span><span style="color:#e4e4e4;">        count </span><span style="font-weight:bold;color:#ffdd33;">+= </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if</span><span style="color:#e4e4e4;"> x </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#cc8c3c;">0 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            </span><span style="font-weight:bold;color:#ffdd33;">break</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    (bytes, count)
+</span><span style="color:#e4e4e4;">}
+</span><span style="color:#e4e4e4;">
+</span><span style="font-weight:bold;color:#ffdd33;">pub </span><span style="color:#95a99f;">fn </span><span style="font-weight:bold;color:#e4e4e4;">decode_length</span><span style="color:#e4e4e4;">(data: </span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">[</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">]) -&gt; </span><span style="color:#95a99f;">u32 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> multiplier: </span><span style="color:#95a99f;">u32 </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> value </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> index </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    </span><span style="font-weight:bold;color:#ffdd33;">loop </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">        encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">=</span><span style="color:#e4e4e4;"> data[index];
+</span><span style="color:#e4e4e4;">        value </span><span style="font-weight:bold;color:#ffdd33;">+= </span><span style="color:#e4e4e4;">(encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">as </span><span style="color:#95a99f;">u32 </span><span style="font-weight:bold;color:#ffdd33;">&amp; </span><span style="color:#cc8c3c;">127</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">*</span><span style="color:#e4e4e4;"> multiplier;
+</span><span style="color:#e4e4e4;">        multiplier </span><span style="font-weight:bold;color:#ffdd33;">*= </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if</span><span style="color:#e4e4e4;"> multiplier </span><span style="font-weight:bold;color:#ffdd33;">&gt; </span><span style="color:#cc8c3c;">128 </span><span style="font-weight:bold;color:#ffdd33;">* </span><span style="color:#cc8c3c;">128 </span><span style="font-weight:bold;color:#ffdd33;">* </span><span style="color:#cc8c3c;">128 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            panic!(</span><span style="color:#73c936;">&quot;Something definitely wrong here chief&quot;</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if </span><span style="color:#e4e4e4;">(encoded_byte </span><span style="font-weight:bold;color:#ffdd33;">&amp; </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#cc8c3c;">0 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            </span><span style="font-weight:bold;color:#ffdd33;">break</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">        index </span><span style="font-weight:bold;color:#ffdd33;">+= </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    value
+</span><span style="color:#e4e4e4;">}
+</span></pre>
+<p>By the standard to fully have a client that passes all checkmarks you
+need a client that is able to communicate through streaming
+and through websocket. Currently my client only does TCP and no
+websocket(shouldn't be too difficult to implement and I will in the future).
+But the way to receive the full payload through tcp is my simply getting
+the first byte, which represents the flags and the type of packet request
+that's coming from the server. Then we parse the second byte, which lets us
+know how many bytes we should wait from the streaming packet (remaining bytes).
+This way we know for sure we will always receive the full packet and no extra
+or less bytes. Method for receiving is shown below.</p>
+<pre style="background-color:#181818;">
+<span style="font-weight:bold;color:#ffdd33;">pub </span><span style="color:#95a99f;">fn </span><span style="font-weight:bold;color:#e4e4e4;">receive</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;mut </span><span style="color:#e4e4e4;">self) -&gt; Result&lt;Option&lt;Message&gt;, std::io::Error&gt; {
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> header_byte </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">[</span><span style="color:#cc8c3c;">0</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">; </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">];
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> len_bytes </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#95a99f;">Vec</span><span style="color:#e4e4e4;">::with_capacity(</span><span style="color:#cc8c3c;">4</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">    </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> body </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#95a99f;">Vec</span><span style="color:#e4e4e4;">::new();
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">    {
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">let</span><span style="color:#e4e4e4;"> stream </span><span style="font-weight:bold;color:#ffdd33;">= match </span><span style="color:#e4e4e4;">self.client.</span><span style="font-weight:bold;color:#e4e4e4;">as_mut</span><span style="color:#e4e4e4;">() {
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">Some</span><span style="color:#e4e4e4;">(s) </span><span style="font-weight:bold;color:#ffdd33;">=&gt;</span><span style="color:#e4e4e4;"> s,
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">None </span><span style="font-weight:bold;color:#ffdd33;">=&gt; return </span><span style="color:#95a99f;">Ok</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">None</span><span style="color:#e4e4e4;">),
+</span><span style="color:#e4e4e4;">        };
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">match</span><span style="color:#e4e4e4;"> stream.</span><span style="font-weight:bold;color:#e4e4e4;">read</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;mut</span><span style="color:#e4e4e4;"> header_byte) {
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">Ok</span><span style="color:#e4e4e4;">(</span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">=&gt; </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">                self.client </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#95a99f;">None</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">                </span><span style="font-weight:bold;color:#ffdd33;">return </span><span style="color:#95a99f;">Ok</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">None</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">            }
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">Ok</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">_</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">=&gt; </span><span style="color:#e4e4e4;">{}
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">Err</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">ref</span><span style="color:#e4e4e4;"> e)
+</span><span style="color:#e4e4e4;">                </span><span style="font-weight:bold;color:#ffdd33;">if</span><span style="color:#e4e4e4;"> e.</span><span style="font-weight:bold;color:#e4e4e4;">kind</span><span style="color:#e4e4e4;">() </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#e4e4e4;">std::io::ErrorKind::WouldBlock
+</span><span style="color:#e4e4e4;">                    </span><span style="font-weight:bold;color:#ffdd33;">||</span><span style="color:#e4e4e4;"> e.</span><span style="font-weight:bold;color:#e4e4e4;">kind</span><span style="color:#e4e4e4;">() </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#e4e4e4;">std::io::ErrorKind::TimedOut </span><span style="font-weight:bold;color:#ffdd33;">=&gt;
+</span><span style="color:#e4e4e4;">            {
+</span><span style="color:#e4e4e4;">                </span><span style="font-weight:bold;color:#ffdd33;">return </span><span style="color:#95a99f;">Ok</span><span style="color:#e4e4e4;">(</span><span style="color:#95a99f;">None</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">            }
+</span><span style="color:#e4e4e4;">            </span><span style="color:#95a99f;">Err</span><span style="color:#e4e4e4;">(e) </span><span style="font-weight:bold;color:#ffdd33;">=&gt; return </span><span style="color:#95a99f;">Err</span><span style="color:#e4e4e4;">(e),
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">let </span><span style="font-weight:bold;color:#ffdd33;">mut</span><span style="color:#e4e4e4;"> single_byte </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="color:#e4e4e4;">[</span><span style="color:#cc8c3c;">0</span><span style="color:#95a99f;">u8</span><span style="color:#e4e4e4;">; </span><span style="color:#cc8c3c;">1</span><span style="color:#e4e4e4;">];
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">loop </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            stream.</span><span style="font-weight:bold;color:#e4e4e4;">read_exact</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;mut</span><span style="color:#e4e4e4;"> single_byte)</span><span style="font-weight:bold;color:#ffdd33;">?</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">            len_bytes.</span><span style="font-weight:bold;color:#e4e4e4;">push</span><span style="color:#e4e4e4;">(single_byte[</span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">]);
+</span><span style="color:#e4e4e4;">            </span><span style="font-weight:bold;color:#ffdd33;">if </span><span style="color:#e4e4e4;">(single_byte[</span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">] </span><span style="font-weight:bold;color:#ffdd33;">&amp; </span><span style="color:#cc8c3c;">128</span><span style="color:#e4e4e4;">) </span><span style="font-weight:bold;color:#ffdd33;">== </span><span style="color:#cc8c3c;">0 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">                </span><span style="font-weight:bold;color:#ffdd33;">break</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">            }
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">
+</span><span style="color:#e4e4e4;">        </span><span style="color:#95a99f;">let</span><span style="color:#e4e4e4;"> remaining_len </span><span style="font-weight:bold;color:#ffdd33;">= </span><span style="font-weight:bold;color:#e4e4e4;">decode_length</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;</span><span style="color:#e4e4e4;">len_bytes) </span><span style="font-weight:bold;color:#ffdd33;">as </span><span style="color:#95a99f;">usize</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        </span><span style="font-weight:bold;color:#ffdd33;">if</span><span style="color:#e4e4e4;"> remaining_len </span><span style="font-weight:bold;color:#ffdd33;">&gt; </span><span style="color:#cc8c3c;">0 </span><span style="color:#e4e4e4;">{
+</span><span style="color:#e4e4e4;">            body.</span><span style="font-weight:bold;color:#e4e4e4;">resize</span><span style="color:#e4e4e4;">(remaining_len, </span><span style="color:#cc8c3c;">0</span><span style="color:#e4e4e4;">);
+</span><span style="color:#e4e4e4;">            stream.</span><span style="font-weight:bold;color:#e4e4e4;">read_exact</span><span style="color:#e4e4e4;">(</span><span style="font-weight:bold;color:#ffdd33;">&amp;mut</span><span style="color:#e4e4e4;"> body)</span><span style="font-weight:bold;color:#ffdd33;">?</span><span style="color:#e4e4e4;">;
+</span><span style="color:#e4e4e4;">        }
+</span><span style="color:#e4e4e4;">    }
+</span><span style="color:#e4e4e4;">    </span><span style="font-style:italic;color:#cc6666;">// ...
+</span></pre>
+<h2>Crate and repository</h2>
+<p>For any updates or if a want to use a simple mqtt client with no
+external dependencies arises, both links can be found here.</p>
+<p><a href="https://crates.io/crates/zabamqtt">Rust crate</a></p>
+<p><a href="https://github.com/Skyfrei/zabamqtt">Repository hosted in GitHub</a></p>
 
       </section>
     </article>
-  </main>
+
 </body>
 </html>

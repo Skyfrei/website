@@ -22,8 +22,7 @@ fn blogFileToHtml(file: &PathBuf) -> Result<String, Box<dyn Error>> {
 
     let body_html = converter::mdToHtml(body)?;
     let mut env = Environment::new();
-    let template_source = POST_TEMPLATE;
-    env.add_template("post", &template_source)?;
+    env.add_template("post", POST_TEMPLATE)?;
 
     let tmpl = env.get_template("post")?;
     let rendered_html = tmpl.render(context! {
@@ -75,9 +74,19 @@ pub fn generate_blog_index() -> Result<String, Box<dyn Error>> {
     let blog_files: Vec<blog_struct::Blog> = mdDirToBlogs()?;
 
     let mut env = Environment::new();
-
     env.add_template("blog_index", BLOG_INDEX_TEMPLATE)?;
     let tmpl = env.get_template("blog_index")?;
+
+    // Collect all unique years present in the posts (assumes date starts with YYYY-...)
+    let mut years_set: BTreeSet<String> = BTreeSet::new();
+    for blog in &blog_files {
+        if let Some(year) = blog.meta.date.get(0..4) {
+            years_set.insert(year.to_string());
+        }
+    }
+    // Newest year first
+    let available_years: Vec<String> = years_set.into_iter().rev().collect();
+    let current_year = available_years.first().cloned();
 
     let mut tag_map: BTreeMap<String, Vec<&blog_struct::Blog>> = BTreeMap::new();
     let mut all_tags: BTreeSet<String> = BTreeSet::new();
@@ -88,19 +97,26 @@ pub fn generate_blog_index() -> Result<String, Box<dyn Error>> {
             tag_map.entry(tag.clone()).or_default().push(blog);
         }
     }
+
+    // Render tag pages
     for (tag, tagged_blogs) in &tag_map {
         let rendered_tag = tmpl.render(context! {
             blogs => tagged_blogs,
             css => STYLE_BLOG_INDEX_CSS,
             active_tag => Some(tag),
             all_tags => &all_tags,
+            years => &available_years,
+            current_year => &current_year,
         })?;
         converter::save_html(&format!("tag-{tag}"), &rendered_tag)?;
     }
 
+    // Render main index
     let rendered = tmpl.render(context! {
         blogs => blog_files,
         css => STYLE_BLOG_INDEX_CSS,
+        years => &available_years,
+        current_year => &current_year,
     })?;
     converter::save_html("blog", &rendered)?;
     Ok(rendered)

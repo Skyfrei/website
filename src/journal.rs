@@ -65,6 +65,17 @@ pub fn generate_journal_index() -> Result<String, Box<dyn Error>> {
     env.add_template("journal_index", JOURNAL_INDEX_TEMPLATE)?;
     let tmpl = env.get_template("journal_index")?;
 
+    // Collect all distinct years from post dates (assumes format starts with YYYY)
+    let mut years_set: BTreeSet<String> = BTreeSet::new();
+    for post in &journal_files {
+        if let Some(year) = post.meta.date.get(0..4) {
+            years_set.insert(year.to_string());
+        }
+    }
+    // Newest year first
+    let available_years: Vec<String> = years_set.into_iter().rev().collect();
+    let current_year = available_years.first().cloned();
+
     let mut tag_map: BTreeMap<String, Vec<&JournalPost>> = BTreeMap::new();
     let mut all_tags: BTreeSet<String> = BTreeSet::new();
 
@@ -82,6 +93,8 @@ pub fn generate_journal_index() -> Result<String, Box<dyn Error>> {
             css => STYLE_JOURNAL_INDEX_CSS,
             active_tag => Some(tag),
             all_tags => &all_tags,
+            years => &available_years,
+            current_year => &current_year,
         })?;
         converter::save_html(&format!("journal-tag-{tag}"), &rendered_tag)?;
     }
@@ -90,6 +103,8 @@ pub fn generate_journal_index() -> Result<String, Box<dyn Error>> {
     let rendered = tmpl.render(context! {
         posts => journal_files,
         css => STYLE_JOURNAL_INDEX_CSS,
+        years => &available_years,
+        current_year => &current_year,
     })?;
     converter::save_html("journal", &rendered)?;
     Ok(rendered)
